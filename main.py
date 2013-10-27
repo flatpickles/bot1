@@ -1,15 +1,21 @@
 import Bot
+import signal
+import sys
+
+bot1 = None
+
+def quit_handler(signal, frame):
+  global bot1
+  bot1.teardown()
+  sys.exit(0)
 
 def main():
+  global bot1
   bot1 = Bot.Bot()
   bot1.authWithCredsFile("creds")
   followBackProcess = bot1.startFollowBackLoop(60)
-  followBackProcess.join()
 
 if __name__ == "__main__":
     main()
-
-
-# TODO
-# - implement killing bot
-# - use relationship api call instead of list for follow state
+    signal.signal(signal.SIGINT, quit_handler)
+    signal.pause()

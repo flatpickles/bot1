@@ -13,7 +13,7 @@ def main():
   global bot1
   bot1 = Bot.Bot()
   bot1.authWithCredsFile("creds")
-  followBackProcess = bot1.startFollowBackLoop(60)
+  bot1.startLoops()
 
 if __name__ == "__main__":
     main()

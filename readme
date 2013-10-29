@@ -1,5 +1,10 @@
+Currently this bot will:
+- follow back
+- follow new users
+- retweet people who it follows
+- tweet and retweet about interests and current trends
+
 To do:
-- favorite, RT or respond to @mentions
-- retweet/fave followed users
-- retweet/fave tweets from search
-- plagiarize tweets from search (not followers)
+- fave tweets from search and friends
+- fave, RT or respond to @mentions
+- clean things up / document

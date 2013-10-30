@@ -14,6 +14,7 @@ class Bot:
     self._name = None
     self._log("spinning up a new bot")
     self._toFollowQueue = multiprocessing.Queue() # contains user IDs
+    self.running = False
 
     # configure this instance with defaults (these fields can be configured on a bot-by-bot basis)
     self.location = config.LOCATION
@@ -44,9 +45,12 @@ class Bot:
       self._name = me.screen_name
       self._id = me.id
       self._log("authentication succeeded")
+      self.running = True
+      return True
     except Exception as e:
       self._log("authentication failed")
       traceback.print_exc()
+      return False
 
   def start(self):
     # start a loop to follow a new follower at each interval
@@ -58,6 +62,9 @@ class Bot:
     # start a loop to tweet on occasion
     self.tweetProcess = multiprocessing.Process(target=self._tweetLoop, args=(config.TWEET_INTERVAL,config.TWEET_PERTURBATION,))
     self.tweetProcess.start()
+    # start a loop to favorite stuff
+    self.faveProcess = multiprocessing.Process(target=self._faveLoop, args=(config.FAVE_INTERVAL,))
+    self.faveProcess.start()
 
     self._log("all processes started")
 
@@ -66,7 +73,36 @@ class Bot:
     self.followBackProcess.terminate()
     self.followSearchProcess.terminate()
     self.tweetProcess.terminate()
+    self.faveProcess.terminate()
     self._log("all processes stopped")
+
+  ### fave lots of stuff ###
+
+  def _faveLoop(self, interval):
+    while True:
+      try:
+        if random.random() < self.faveDist[0]:
+          # fave a tweet from someone followed by this bot
+          self._faveFriendTweet()
+        else:
+          # fave a tweet from the wilderness
+          self._faveSearchTweet()
+      except Exception as e:
+        self._log("encountered an exception in fave loop")
+        traceback.print_exc()
+      perturbation = interval * 0.1
+      toWait = interval + (random.random() * 2 * perturbation - perturbation)
+      time.sleep(int(toWait))
+
+  def _faveFriendTweet(self):
+    tweet = self._getFriendTweet()
+    self.api.create_favorite(id=tweet.id)
+    self._log("faved @%s/%s (from friend)" % (tweet.user.screen_name, tweet.id_str))
+
+  def _faveSearchTweet(self):
+    tweet = self._getTopicalTweet(self.useTrendsForFaves, self.searchTypeForFaves)
+    self.api.create_favorite(id=tweet.id)
+    self._log("faved @%s/%s (from search)" % (tweet.user.screen_name, tweet.id_str))
 
   ### tweet or retweet occasionally ###
 
@@ -86,7 +122,9 @@ class Bot:
       except Exception as e:
         self._log("encountered an exception in tweet loop")
         traceback.print_exc()
+      # start out with a random time, add up to 2 hours depending on the time of the day
       toWait = interval + (random.random() * 2 * perturbation - perturbation)
+      toWait += 60 * 60 * abs(12-((datetime.datetime.now().hour - 6) % 24))/6.0
       time.sleep(int(toWait))
 
   def _retweetFriendTweet(self):
@@ -177,21 +215,24 @@ class Bot:
       options = [trend['name'] for trend in self.api.trends_place(id=self.location)[0]['trends']]
     currTopic = random.choice(options)
     options = self.api.search(q=currTopic, search_type=searchType)
-    selection = self._langAppropriateTweet(options)
+    selection = self._langAppropriateTweet(options, True)
     return selection if selection != None else self._getTopicalTweet(useTrends, searchType)
 
   def _getFriendTweet(self):
     options = self.api.home_timeline(exclude_replies=True)
-    selection = self._langAppropriateTweet(options)
+    selection = self._langAppropriateTweet(options, False) # api takes care of excluding replies here
     return selection if selection != None else self._getFriendTweet()
 
-  def _langAppropriateTweet(self, tweets):
+  def _langAppropriateTweet(self, tweets, excludeReplies):
     selection = random.choice(tweets)
     maxAttempts = 20
     # make sure this isn't already tweeted and is in desired language
-    while (selection.lang != self.language or selection.user.id == self._id) and maxAttempts > 0:
-      selection = random.choice(tweets)
-      maxAttempts -= 1
+    while (selection.lang != self.language or selection.user.id == self._id \
+      or (excludeReplies and selection.in_reply_to_user_id != None)) \
+      and maxAttempts > 0:
+        selection = random.choice(tweets)
+        maxAttempts -= 1
+        tweets.remove(selection)
     return selection if maxAttempts > 0 else None
 
   # print a message to stdout with a timestamp
@@ -201,5 +242,3 @@ class Bot:
       print "[%s] %s" % (timestamp, message)
     else:
       print "[%s ~ @%s] %s" % (timestamp, self._name.lower(), message)
-
-

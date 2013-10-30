@@ -3,8 +3,11 @@ Currently this bot will:
 - follow new users
 - retweet people who it follows
 - tweet and retweet about interests and current trends
+- fave tweets from search and friends
 
 To do:
-- fave tweets from search and friends
+- make time intervals and perturbations all easily set in config
 - fave, RT or respond to @mentions
+- make time-of-day tweet time offset more of a bell curve
 - clean things up / document
+- catch "already faved/retweeted" errors

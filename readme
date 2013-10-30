@@ -8,6 +8,7 @@ Currently this bot will:
 To do:
 - make time intervals and perturbations all easily set in config
 - fave, RT or respond to @mentions
+- remove dichotomy between bools and distributions
 - make time-of-day tweet time offset more of a bell curve
 - clean things up / document
 - catch "already faved/retweeted" errors

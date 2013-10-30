@@ -2,8 +2,8 @@
 FOLLOW_INTERVAL = 60 # one minute
 FAVE_INTERVAL = 3 * 60 # 3 minutes +/- 10%
 FOLLOW_SEARCH_INTERVAL = 20 * 60 # 20 minutes
-TWEET_INTERVAL =  1.5 * 60 * 60 # 1.5 hours - baseline increased up to 2 hours depending on time of day
-TWEET_PERTURBATION = 30 * 60 # if you will; 30 mins
+TWEET_INTERVAL =  1.25 * 60 * 60 # 1 hour, 15 mins - baseline increased up to 2 hours depending on time of day
+TWEET_PERTURBATION = 45 * 60 # if you will; 45 mins
 
 ### defaults - configurable as properties on an instance of Bot ###
 LOCATION = 23424977 # place ID - USA

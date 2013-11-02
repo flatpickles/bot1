@@ -139,8 +139,8 @@ class Bot:
 
   def _tweetSearchTweet(self):
     tweet = self._getTopicalTweet(self.useTrendsForTweets, self.searchTypeForTweets)
-    # never tweet the text of RTs
-    if 'RT @' in tweet.text:
+    # never reproduce tweets that mention anyone else
+    if '@' in tweet.text:
       self._tweetSearchTweet()
     else:
       self.api.update_status(status=tweet.text)

@@ -20,6 +20,7 @@ class Bot:
     self.location = config.LOCATION
     self.language = config.LANGUAGE
     self.interests = config.INTERESTS
+    self.blacklist = config.BLACKLIST
     self.useTrendsForFollows = config.USE_TRENDS_FOR_FOLLOWS
     self.useTrendsForTweets = config.USE_TRENDS_FOR_TWEETS
     self.useTrendsForRetweets = config.USE_TRENDS_FOR_RETWEETS
@@ -215,20 +216,21 @@ class Bot:
       options = [trend['name'] for trend in self.api.trends_place(id=self.location)[0]['trends']]
     currTopic = random.choice(options)
     options = self.api.search(q=currTopic, search_type=searchType)
-    selection = self._langAppropriateTweet(options, True)
+    selection = self._getGoodTweet(options, True)
     return selection if selection != None else self._getTopicalTweet(useTrends, searchType)
 
   def _getFriendTweet(self):
     options = self.api.home_timeline(exclude_replies=True)
-    selection = self._langAppropriateTweet(options, False) # api takes care of excluding replies here
+    selection = self._getGoodTweet(options, False) # api takes care of excluding replies here
     return selection if selection != None else self._getFriendTweet()
 
-  def _langAppropriateTweet(self, tweets, excludeReplies):
+  # find a tweet in tweets that's in desired language, isn't a reply (if excludeReplies), and isn't blacklisted
+  def _getGoodTweet(self, tweets, excludeReplies):
     selection = random.choice(tweets)
     maxAttempts = 20
-    # make sure this isn't already tweeted and is in desired language
     while (selection.lang != self.language or selection.user.id == self._id \
-      or (excludeReplies and selection.in_reply_to_user_id != None)) \
+      or (excludeReplies and selection.in_reply_to_user_id != None) \
+      or any([word in selection.text for word in self.blacklist])) \
       and maxAttempts > 0:
         selection = random.choice(tweets)
         maxAttempts -= 1

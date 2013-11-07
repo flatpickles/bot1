@@ -8,7 +8,7 @@ TWEET_PERTURBATION = 45 * 60 # if you will; 45 mins
 ### defaults - configurable as properties on an instance of Bot ###
 LOCATION = 23424977 # place ID - USA
 LANGUAGE = 'en'
-INTERESTS = ["follow", "follow back", "teamfollowback", "retweet", "fave", "maplight"]
+INTERESTS = ["follow", "follow back", "teamfollowback", "retweet", "fave"]
 BLACKLIST = ["unfollow"]
 INTEREST_DIST = [.7, .3] # [interests array, current top trends]
 FAVE_DIST = [.15, .85] # [fave from following, fave from search]

@@ -1,15 +1,21 @@
-Currently this bot will:
-- follow back
-- follow new users
+I built this to experiment with Twitter's Followback subculture. It was running for almost two weeks, and during this period it accumulated 843 followers (as of this readme revision) and began getting a handful of mentions, faves, and retweets. That said, most of the content it produced and consumed is best described as "trash" – and this must be true for most of the accounts it has interacted with. #teamfollowback is a weird thing.
+
+This is in past tense because approximately 10 days after the account came online, its password and OAuth tokens were reset by Twitter, and an email was sent to its email address. "Twitter believes that your account may have been compromised by a website or service not associated with Twitter. We've reset your password to prevent others from accessing your account." Good work Twitter! I imagine that most spam bots are designed quite similarly to this one, and it's fantastic that this sort of behavior gets noticed so quickly.
+
+I'm no longer running this bot, but you can check out the account I was automating with it at www.twitter.com/YungswaggaR. I do not encourage anyone to appropriate and use this code, but I'm leaving this and the @YungswaggaR account online for anyone who might find this exercise as interesting as I do.
+
+Currently this bot is designed to:
+- follow back accounts that follow it
+- follow new accounts on a regular basis
 - retweet people whom it follows
 - tweet and retweet about interests and current trends
 - fave tweets from search and friends
 
-To do:
-- make time intervals and perturbations all easily set in config
+To make this bot better, I could have addressed these things:
 - fave, RT or respond to @mentions
-- remove dichotomy between bools and distributions
 - put logging in a queue for better cross-process output
 - make time-of-day tweet time offset more of a bell curve
-- clean things up / document
 - catch "already faved/retweeted" errors
+- make time intervals and perturbations all easily set in config
+- remove dichotomy between bools and distributions
+- clean things up / document
